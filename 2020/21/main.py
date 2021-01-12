@@ -2,7 +2,7 @@ import os
 import re
 import sys
 
-from lib.executor import Executor
+from aoc_executor import AocExecutor
 
 CWD = os.path.dirname(os.path.abspath(__file__))
 
@@ -53,7 +53,7 @@ def part2_solution(input):
     return ",".join(ingredients)
 
 
-executor = Executor(
+executor = AocExecutor(
     [l.rstrip() for l in open(f"{CWD}/input.txt", "r").readlines()],
     part1_solution,
     part2_solution,

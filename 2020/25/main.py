@@ -1,6 +1,6 @@
 import sys
 
-from lib.executor import Executor
+from aoc_executor import AocExecutor
 
 # My input
 CARD_PUBLIC_KEY = 15113849
@@ -40,5 +40,5 @@ def part2_solution(_):
     return ""
 
 
-executor = Executor([], part1_solution, part2_solution)
+executor = AocExecutor([], part1_solution, part2_solution)
 executor(sys.argv)

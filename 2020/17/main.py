@@ -2,7 +2,7 @@ import os
 import sys
 
 from collections import deque
-from lib.executor import Executor
+from aoc_executor import AocExecutor
 
 
 CWD = os.path.dirname(os.path.abspath(__file__))
@@ -37,7 +37,10 @@ class Board3D:
             count = 0
             for nz in range(max(0, z - 1), min(z + 2, len(self.cubes))):
                 for ny in range(max(0, y - 1), min(y + 2, len(self.cubes[0]))):
-                    for nx in range(max(0, x - 1), min(x + 2, len(self.cubes[0][0])),):
+                    for nx in range(
+                        max(0, x - 1),
+                        min(x + 2, len(self.cubes[0][0])),
+                    ):
                         if z == nz and y == ny and x == nx:
                             continue
                         else:
@@ -104,7 +107,8 @@ class Board4D:
                 for nz in range(max(0, z - 1), min(z + 2, len(self.hcubes[0]))):
                     for ny in range(max(0, y - 1), min(y + 2, len(self.hcubes[0][0]))):
                         for nx in range(
-                            max(0, x - 1), min(x + 2, len(self.hcubes[0][0][0])),
+                            max(0, x - 1),
+                            min(x + 2, len(self.hcubes[0][0][0])),
                         ):
                             if w == nw and z == nz and y == ny and x == nx:
                                 continue
@@ -156,7 +160,7 @@ def part2_solution(input):
     return board.active_cubes()
 
 
-executor = Executor(
+executor = AocExecutor(
     [l.rstrip() for l in open(f"{CWD}/input.txt", "r").readlines()],
     part1_solution,
     part2_solution,

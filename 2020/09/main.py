@@ -1,7 +1,7 @@
 import os
 import sys
 
-from lib.executor import Executor
+from aoc_executor import AocExecutor
 
 
 CWD = os.path.dirname(os.path.abspath(__file__))
@@ -24,7 +24,9 @@ def first_invalid_number(input):
         number_pool.add(input[i])
 
 
-def part1_solution(input,):
+def part1_solution(
+    input,
+):
     return first_invalid_number(input)[1]
 
 
@@ -42,7 +44,7 @@ def part2_solution(input):
                 break
 
 
-executor = Executor(
+executor = AocExecutor(
     [int(l.rstrip()) for l in open(f"{CWD}/input.txt", "r").readlines()],
     part1_solution,
     part2_solution,

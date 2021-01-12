@@ -1,6 +1,6 @@
 import sys
 
-from lib.executor import Executor
+from aoc_executor import AocExecutor
 
 
 def generate_circle(labels, num_cups):
@@ -78,5 +78,5 @@ def part2_solution(labels):
     return output_part2(cups, head)
 
 
-executor = Executor([1, 9, 8, 7, 5, 3, 4, 6, 2], part1_solution, part2_solution)
+executor = AocExecutor([1, 9, 8, 7, 5, 3, 4, 6, 2], part1_solution, part2_solution)
 executor(sys.argv)

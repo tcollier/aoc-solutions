@@ -1,6 +1,6 @@
 import sys
 
-from lib.executor import Executor
+from aoc_executor import AocExecutor
 
 
 def play(input, num_rounds):
@@ -26,5 +26,5 @@ def part2_solution(input):
     return play(input, 30000000)
 
 
-executor = Executor([14, 3, 1, 0, 9, 5], part1_solution, part2_solution)
+executor = AocExecutor([14, 3, 1, 0, 9, 5], part1_solution, part2_solution)
 executor(sys.argv)

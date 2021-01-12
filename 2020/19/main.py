@@ -2,7 +2,7 @@ import os
 import re
 import sys
 
-from lib.executor import Executor
+from aoc_executor import AocExecutor
 
 CWD = os.path.dirname(os.path.abspath(__file__))
 
@@ -62,7 +62,7 @@ def part2_solution(input):
     return count_valid_strings(input, {8: "42 | 42 8", 11: "42 31 | 42 11 31"})
 
 
-executor = Executor(
+executor = AocExecutor(
     [l.rstrip() for l in open(f"{CWD}/input.txt", "r").readlines()],
     part1_solution,
     part2_solution,
