@@ -1,4 +1,4 @@
-require_relative '../../lib/ruby/executor'
+require 'aoc_executor'
 
 module Part1Validator
   def self.valid?(min, max, char, pwd)
@@ -22,7 +22,7 @@ end
 
 part1_proc = Proc.new { |input| count_valid(input, Part1Validator) }
 part2_proc = Proc.new { |input| count_valid(input, Part2Validator) }
-executor = Executor.new(
+executor = AocExecutor.new(
   File.readlines(File.join(File.dirname(__FILE__), 'input.txt')).map(&:rstrip),
   part1_proc,
   part2_proc

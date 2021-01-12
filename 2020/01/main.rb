@@ -1,6 +1,6 @@
 require 'set'
 
-require_relative '../../lib/ruby/executor'
+require 'aoc_executor'
 
 def pair_with_sum(numbers, sum)
   others = Set.new(numbers[1..-1])
@@ -41,7 +41,7 @@ part2_proc = Proc.new do |input|
   triplet[0] * triplet[1] * triplet[2]
 end
 
-executor = Executor.new(
+executor = AocExecutor.new(
   File.readlines(File.join(File.dirname(__FILE__), 'input.txt')).map(&:to_i),
   part1_proc,
   part2_proc
