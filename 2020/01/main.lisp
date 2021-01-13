@@ -1,4 +1,4 @@
-(load "lib/lisp/executor.lisp")
+(load "../aoc_executor.lisp/src/executor.lisp")
 
 (defun get-numbers (filename)
     (sort

@@ -1,1 +1,2 @@
 git+https://github.com/tcollier/aoc_executor.py
+git+https://github.com/tcollier/aoc_solver@v0.0.13
