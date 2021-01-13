@@ -1,9 +1,9 @@
-import math
 import os
 import re
 import sys
 
 from collections import deque
+from functools import reduce
 from aoc_executor import AocExecutor
 
 CWD = os.path.dirname(os.path.abspath(__file__))
@@ -22,9 +22,12 @@ def play_part1(hand1, hand2):
 
 
 def play_part2(hand1, hand2):
+    def score(hand):
+        return reduce(lambda acc, n: acc + n[0] * n[1], enumerate(hand), 0)
+
     seen_hands = set()
     while hand1 and hand2:
-        hand_id = ".".join([str(c) for c in hand1 + deque(["x"]) + hand2])
+        hand_id = score(hand1) + score(hand2) * 1j
         if hand_id in seen_hands:
             return True
         seen_hands.add(hand_id)

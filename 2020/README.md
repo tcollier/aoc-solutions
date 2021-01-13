@@ -45,7 +45,7 @@ PASS [2020/18 ruby      ] (part1:   2.98 ms, part2:   3.41 ms, overhead: 267.06 
 PASS [2020/19 python    ] (part1:   3.88 ms, part2:  17.94 ms, overhead:  49.37 ms)
 PASS [2020/20 python    ] (part1:   5.23 ms, part2: 110.92 ms, overhead:  51.96 ms)
 PASS [2020/21 python    ] (part1: 771.94 μs, part2: 688.27 μs, overhead:  45.58 ms)
-PASS [2020/22 python    ] (part1:  89.83 μs, part2:  20.22 s,  overhead:  66.12 ms)
+PASS [2020/22 python    ] (part1:  90.41 μs, part2:   1.21 s,  overhead:  40.45 ms)
 PASS [2020/23 java      ] (part1: 998.03 ns, part2: 253.96 ms, overhead: 116.17 ms)
 PASS [2020/23 python    ] (part1:  76.40 μs, part2:  10.48 s,  overhead:  67.18 ms)
 PASS [2020/24 python    ] (part1:  24.91 ms, part2: 791.53 ms, overhead:  46.57 ms)
