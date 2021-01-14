@@ -1,7 +1,12 @@
 require 'aoc_executor'
 
 part1_proc = Proc.new do |input|
-  eval(input[0].gsub('(', '+ 1').gsub(')', '- 1'))
+  str = input[0].chomp
+  while str !~ /^(.)\1{1,}$/
+    str.gsub!(/\(\g<0>?\)/, '')
+    str.gsub!(/\)\g<0>?\(/, '')
+  end
+  (-1) ** (str[0].ord - '('.ord) * str.length
 end
 
 part2_proc = Proc.new do |input|
