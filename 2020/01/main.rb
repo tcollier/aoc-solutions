@@ -31,14 +31,24 @@ def triplet_with_sum(numbers, sum)
   raise "No triplet with sum #{sum} found"
 end
 
+def a(m, n)
+  q=p;m.sample(n).tap{|p|p.reduce(:+)==?<.ord.to_s(3).to_i&&q=p} until q;eval(q.join(?*))
+end
+
+def part1_ans(input)
+  a(input, 2)
+end
+
+def part2_ans(input)
+  a(input, 3)
+end
+
 part1_proc = Proc.new do |input|
-  pair = pair_with_sum(input, 2020)
-  pair[0] * pair[1]
+  a(input, 2)
 end
 
 part2_proc = Proc.new do |input|
-  triplet = triplet_with_sum(input, 2020)
-  triplet[0] * triplet[1] * triplet[2]
+  a(input, 3)
 end
 
 executor = AocExecutor.new(
