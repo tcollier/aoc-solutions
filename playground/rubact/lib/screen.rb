@@ -1,6 +1,8 @@
 require 'highline'
 require 'tty-cursor'
 
+require_relative 'text_format'
+
 class Screen
   def initialize
     Signal.trap('SIGWINCH', proc { self.refresh_size! })
@@ -27,8 +29,12 @@ class Screen
     line_num = 0
     application.draw(width, height) do |lines|
       lines.split("\n").each do |line|
-        trunc_line = line[0..width - 1]
-        print trunc_line + (' ' * (width - trunc_line.length))
+        screen_width = width
+        # Detect any non-printable ANSI formatting and adjust width accordingly
+        screen_width += line.scan(Ansi::FORMAT_REGEX).map(&:length).sum
+
+        trunc_line = line[0..screen_width - 1]
+        print trunc_line + (' ' * (screen_width - trunc_line.length))
         line_num += 1
         break if line_num == height
       end
@@ -42,9 +48,10 @@ class Screen
   end
 
   def finalize
+    print Ansi.clear
     print cursor.show
-    print cursor.move_to(0, 0)
-    print cursor.clear_screen_down
+    # print cursor.move_to(0, 0)
+    # print cursor.clear_screen_down
     STDOUT.flush
   end
 

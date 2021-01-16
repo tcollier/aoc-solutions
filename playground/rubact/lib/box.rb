@@ -1,3 +1,5 @@
+require_relative 'text_format'
+
 module TextAlign
   LEFT = 1
   CENTER = 2
@@ -53,11 +55,14 @@ module BorderStyles
 end
 
 class BorderSettings
-  def initialize(left: false, top: false, right: false, bottom: false)
+  attr_reader :color
+
+  def initialize(left: false, top: false, right: false, bottom: false, color: nil)
     @left = left
     @top = top
     @right = right
     @bottom = bottom
+    @color = color
   end
 
   def left?
@@ -141,13 +146,13 @@ class Box
 
   def left(container_width)
     MARGIN * left_margin(container_width) +
-      (@settings.border_settings.left? ? @settings.border_style.left_vert : '') +
+      (@settings.border_settings.left? ? Ansi.format(@settings.border_style.left_vert, [*@settings.border_settings.color]) : '') +
       PADDING * @settings.padding.left
   end
 
   def right(container_width)
     PADDING * @settings.padding.right +
-      (@settings.border_settings.right? ? @settings.border_style.right_vert : '') +
+      (@settings.border_settings.right? ? Ansi.format(@settings.border_style.right_vert, [*@settings.border_settings.color]) : '') +
       MARGIN * right_margin(container_width)
   end
 
@@ -184,9 +189,12 @@ class Box
 
   def draw_horiz_border(container_width, start_corner, horizontal, end_corner, &block)
     yield MARGIN * left_margin(container_width) +
-      start_corner +
-      horizontal * (@width + @settings.padding.left + @settings.padding.right) +
-      end_corner +
+    Ansi.format(
+        start_corner +
+        horizontal * (@width + @settings.padding.left + @settings.padding.right) +
+        end_corner,
+        [*@settings.border_settings.color]
+      ) +
       MARGIN * right_margin(container_width)
   end
 
