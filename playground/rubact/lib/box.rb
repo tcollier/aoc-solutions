@@ -83,17 +83,19 @@ class BorderSettings
 end
 
 class BoxSettings
-  attr_reader :width, :margin, :padding, :align, :border_style, :border_settings
+  attr_reader :width, :color, :bg_color, :margin, :padding, :align, :border_style, :border_settings
 
   def initialize(
-    width: nil, border_style: BorderStyles::BOLD, border_settings: BorderSettings.new, margin: BoxSpacing.new, padding: BoxSpacing.new, align: TextAlign::LEFT
+    width: nil, color: nil, bg_color: nil, border_style: BorderStyles::BOLD, border_settings: BorderSettings.new, margin: BoxSpacing.new, padding: BoxSpacing.new, align: TextAlign::LEFT
   )
+    @width = width
+    @color = color
+    @bg_color = bg_color
     @border_style = border_style
     @border_settings = border_settings
     @margin = margin
     @padding = padding
     @align = align
-    @width = width
   end
 end
 
@@ -124,35 +126,36 @@ class Box
 
   def draw_line(container_width, line, &block)
     yield left(container_width) +
-      JUSTIFICATION * left_just +
+      Ansi.format(JUSTIFICATION * left_just, [*@settings.bg_color]) +
       visible(line) +
-      JUSTIFICATION * right_just +
+      Ansi.format(JUSTIFICATION * right_just, [*@settings.bg_color]) +
       right(container_width)
   end
 
   def visible(line)
     if line.length <= @width
-      line
+      v = line
     elsif @settings.align == TextAlign::LEFT
-      line[0..@width - 1]
+      v = line[0..@width - 1]
     elsif @settings.align == TextAlign::CENTER
       left_chop = (line.length - @width) / 2
       right_chop = line.length - @width - left_chop
-      line[left_chop..-right_chop - 1]
+      v = line[left_chop..-right_chop - 1]
     else
-      line[-@width..-1]
+      v = line[-@width..-1]
     end
+    Ansi.format(v, [*@settings.color, *@settings.bg_color])
   end
 
   def left(container_width)
     MARGIN * left_margin(container_width) +
-      (@settings.border_settings.left? ? Ansi.format(@settings.border_style.left_vert, [*@settings.border_settings.color]) : '') +
-      PADDING * @settings.padding.left
+      (@settings.border_settings.left? ? Ansi.format(@settings.border_style.left_vert, [*@settings.bg_color, *@settings.border_settings.color]) : '') +
+      Ansi.format(PADDING * @settings.padding.left, [*@settings.bg_color])
   end
 
   def right(container_width)
-    PADDING * @settings.padding.right +
-      (@settings.border_settings.right? ? Ansi.format(@settings.border_style.right_vert, [*@settings.border_settings.color]) : '') +
+    Ansi.format(PADDING * @settings.padding.right, [*@settings.bg_color]) +
+      (@settings.border_settings.right? ? Ansi.format(@settings.border_style.right_vert, [*@settings.bg_color, *@settings.border_settings.color]) : '') +
       MARGIN * right_margin(container_width)
   end
 
@@ -193,7 +196,7 @@ class Box
         start_corner +
         horizontal * (@width + @settings.padding.left + @settings.padding.right) +
         end_corner,
-        [*@settings.border_settings.color]
+        [*@settings.bg_color, *@settings.border_settings.color]
       ) +
       MARGIN * right_margin(container_width)
   end
@@ -220,13 +223,13 @@ class Box
       )
     end
     @settings.padding.top.times do
-      yield left(container_width) + PADDING * @width + right(container_width)
+      yield left(container_width) + Ansi.format(PADDING * @width, [*@settings.bg_color]) + right(container_width)
     end
   end
 
   def draw_bottom(container_width, &block)
     @settings.padding.bottom.times do
-      yield left(container_width) + PADDING * @width + right(container_width)
+      yield left(container_width) + Ansi.format(PADDING * @width, [*@settings.bg_color]) + right(container_width)
     end
     if @settings.border_settings.bottom?
       draw_horiz_border(
