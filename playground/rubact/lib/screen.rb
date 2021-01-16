@@ -27,14 +27,11 @@ class Screen
     print cursor.hide
     print cursor.move_to(0, 0)
     line_num = 0
-    application.draw(width, height) do |lines|
+    application.draw(width) do |lines|
       lines.split("\n").each do |line|
-        screen_width = width
-        # Detect any non-printable ANSI formatting and adjust width accordingly
-        screen_width += line.scan(Ansi::FORMAT_REGEX).map(&:length).sum
-
+        screen_width = width + Ansi.hidden_width(line)
         trunc_line = line[0..screen_width - 1]
-        print trunc_line + (' ' * (screen_width - trunc_line.length))
+        print Ansi.close_formatting(trunc_line) + (' ' * (screen_width - trunc_line.length))
         line_num += 1
         break if line_num == height
       end

@@ -1,3 +1,5 @@
+COLOR_DEBUG = false
+
 module Ansi
   BOLD = 1
   UNDERLINE = 4
@@ -13,11 +15,9 @@ module Ansi
 
   END_FORMATTING = 0
 
-  FORMAT_REGEX = /\033\[\d+m/
-
   class << self
     def format(str, codes)
-      if codes.length == 0
+      if str.empty? || codes.length == 0
         str
       else
         start_formatting = codes.map(&method(:esc_seq)).join
@@ -29,10 +29,26 @@ module Ansi
       esc_seq(END_FORMATTING)
     end
 
+    def hidden_width(line)
+      return 0 if COLOR_DEBUG
+      width = 0
+      line.scan(/\033\[\d+m/).each { |f| width += f.length }
+      width
+    end
+
+    def close_formatting(line)
+      codes = line.scan(COLOR_DEBUG ? /<(\d+)>/ : /\033\[(\d+)m/)
+      if codes.length > 0 && codes.last[0] != END_FORMATTING.to_s
+        "#{line}#{esc_seq(END_FORMATTING)}"
+      else
+        line
+      end
+    end
+
     private
 
     def esc_seq(code)
-      "\033[#{code}m"
+      COLOR_DEBUG ? "<#{code}>" : "\033[#{code}m"
     end
   end
 end

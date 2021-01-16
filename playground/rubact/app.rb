@@ -13,18 +13,27 @@ class Application
     Time.now < @end_at
   end
 
-  def draw(width, height, &block)
-    settings = BoxSettings.new(
-      width: 80,
+  def draw(width, &block)
+    outer_settings = BoxSettings.new(
       color: TextColor::BLUE.bright,
       bg_color: BgColor::YELLOW,
-      border_style: BorderStyles::DOUBLE,
-      border_settings: BorderSettings.new(bottom: true, top: true, left: true, right: true, color: TextColor::BLUE),
-      align: TextAlign::CENTER,
-      padding: BoxPadding.new(top: 1, bottom: 1, left: 3, right: 3),
-      margin: AutoMargin.new(top: 3, bottom: 2)
+      border_settings: BorderSettings.new(color: TextColor::BLACK),
+      padding: BoxPadding.new(top: 1, right: 2, bottom: 1, left: 2),
+      margin: BoxMargin.new(top: 1, right: 2, bottom: 1, left: 2)
     )
-    Box.new(RubyFiglet::Figlet.new(Time.now.strftime("%H:%M:%S")).to_s, settings).draw(width, height, &block)
+    inner_settings = BoxSettings.new(
+      color: TextColor::RED.bright,
+      bg_color: BgColor::GREEN,
+      border_settings: BorderSettings.new(style: BorderStyles::SOFT, color: TextColor::RED.bright),
+      align: TextAlign::CENTER,
+      padding: BoxPadding.new(top: 1, right: 2, bottom: 1, left: 2),
+      margin: BoxMargin.new(top: 1, right: 3, bottom: 1, left: 2)
+    )
+    Box.new(
+      # Box.new(RubyFiglet::Figlet.new(Time.now.strftime('%H:%M:%S')).to_s, inner_settings),
+      Box.new(Time.now.strftime('%H:%M:%S'), inner_settings),
+      outer_settings
+    ).draw(width, &block)
   end
 end
 
