@@ -29,9 +29,9 @@ class Screen
     line_num = 0
     application.draw(width) do |lines|
       lines.split("\n").each do |line|
-        screen_width = width + Ansi.hidden_width(line)
+        screen_width = width + UI::Ansi.hidden_width(line)
         trunc_line = line[0..screen_width - 1]
-        print Ansi.close_formatting(trunc_line) + (' ' * (screen_width - trunc_line.length))
+        print UI::Ansi.close_formatting(trunc_line) + (' ' * (screen_width - trunc_line.length))
         line_num += 1
         break if line_num == height
       end
@@ -45,7 +45,7 @@ class Screen
   end
 
   def finalize
-    print Ansi.clear
+    print UI::Ansi.clear
     print cursor.show
     STDOUT.flush
   end
