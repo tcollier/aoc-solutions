@@ -1,8 +1,8 @@
 require 'ruby_figlet'
 
-require_relative 'lib/box'
 require_relative 'lib/screen'
-require_relative 'lib/text_format'
+require_relative 'lib/ui/box'
+require_relative 'lib/ui/text_format'
 
 class Application
   def initialize

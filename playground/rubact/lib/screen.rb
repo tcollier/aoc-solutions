@@ -1,7 +1,7 @@
 require 'highline'
 require 'tty-cursor'
 
-require_relative 'text_format'
+require_relative 'ui/text_format'
 
 class Screen
   def initialize

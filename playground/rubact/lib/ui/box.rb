@@ -205,16 +205,163 @@ class Box
   end
 end
 
-class BoxCanvas
-  PADDING = DEBUG_SPACING ? 'p' : ' '
+class MarginCanvas
   MARGIN = DEBUG_SPACING ? 'm' : ' '
+
+  def initialize(margin, bg_color, container_width, contained_width)
+    @margin = margin
+    @bg_color = bg_color
+    @container_width = container_width
+    @contained_width = contained_width
+  end
+
+  def draw_top(&block)
+    margin.top.times { draw_empty_margin(&block) }
+  end
+
+  def left
+    format(left_margin_size)
+  end
+
+  def right
+    format(right_margin_size)
+  end
+
+  def draw_bottom(&block)
+    margin.top.times { draw_empty_margin(&block) }
+  end
+
+  private
+
+  attr_reader :margin, :bg_color, :container_width, :contained_width
+
+  def draw_empty_margin(&block)
+    yield format(left_margin_size + contained_width + right_margin_size)
+  end
+
+  def format(width)
+    Ansi.format(MARGIN * width, [*bg_color])
+  end
+
+  def left_margin_size
+    if margin.auto?
+      (container_width - contained_width) / 2
+    else
+      margin.left
+    end
+  end
+
+  def right_margin_size
+    if margin.auto?
+      container_width - contained_width - left_margin
+    else
+      margin.right
+    end
+  end
+end
+
+class BorderCanvas
+  attr_reader :width
+
+  def initialize(border, bg_color, contained_width)
+    @border = border
+    @bg_color = bg_color
+    @contained_width = contained_width
+    @width = contained_width + (border.left? ? 1 : 0) + (border.right? ? 1 : 0)
+  end
+
+  def draw_top(&block)
+    if border.top?
+      yield horizontal_border(
+        border.left? ? border.style.top_left : '',
+        border.style.top_horiz,
+        border.right? ? border.style.top_right : '',
+      )
+    end
+  end
+
+  def left
+    format(border.style.left_vert) if border.left?
+  end
+
+  def right
+    format(border.style.right_vert) if border.right?
+  end
+
+  def draw_bottom(&block)
+    if border.bottom?
+      yield horizontal_border(
+        border.left? ? border.style.bottom_left : '',
+        border.style.bottom_horiz,
+        border.right? ? border.style.bottom_right : ''
+      )
+    end
+  end
+
+  private
+
+  attr_reader :border, :bg_color, :contained_width
+
+  def horizontal_border(start_corner, horizontal, end_corner)
+    format(start_corner + horizontal * contained_width + end_corner)
+  end
+
+  def format(str)
+    Ansi.format(str, [*bg_color, *border.color])
+  end
+end
+
+class PaddingCanvas
+  PADDING = DEBUG_SPACING ? 'p' : ' '
+
+  attr_reader :width
+
+  def initialize(padding, bg_color, contained_width)
+    @padding = padding
+    @bg_color = bg_color
+    @contained_width = contained_width
+    @width = contained_width + padding.left + padding.right
+  end
+
+  def draw_top(&block)
+    padding.top.times do
+      yield format(padding.left + contained_width + padding.right)
+    end
+  end
+
+  def left
+    format(padding.left)
+  end
+
+  def right
+    format(padding.right)
+  end
+
+  def draw_bottom(&block)
+    padding.bottom.times do
+      yield format(padding.left + contained_width + padding.right)
+    end
+  end
+
+  private
+
+  attr_reader :padding, :bg_color, :contained_width
+
+  def format(width)
+    Ansi.format(PADDING * width, [*bg_color])
+  end
+end
+
+class BoxCanvas
   JUSTIFICATION = DEBUG_SPACING ? 'j' : ' '
 
   def initialize(box, container_width, settings, parent_settings)
     @box = box
     @container_width = container_width
     @settings = settings.merge(parent_settings)
-    @parent_settings = parent_settings
+    @padding = PaddingCanvas.new(settings.padding, settings.bg_color, box.width)
+    @border = BorderCanvas.new(settings.border_settings, settings.bg_color, @padding.width)
+    @margin = MarginCanvas.new(settings.margin, parent_settings.bg_color, container_width, @border.width)
   end
 
   def draw(&block)
@@ -227,17 +374,18 @@ class BoxCanvas
 
   private
 
-  attr_reader :box, :container_width, :settings, :parent_settings
+  attr_reader :box, :container_width, :settings, :padding, :border, :margin
 
   def draw_line(line, &block)
-    yield margin(left_margin) +
-      (settings.border_settings.left? ? Ansi.format(settings.border_settings.style.left_vert, [*settings.bg_color, *settings.border_settings.color]) : '') +
-      Ansi.format(PADDING * settings.padding.left + JUSTIFICATION * left_just, [*settings.bg_color]) +
+    yield margin.left +
+      border.left +
+      padding.left +
+      Ansi.format(JUSTIFICATION * left_just, [*settings.bg_color]) +
       Ansi.format(visible(line), [*settings.bg_color]) +
-      Ansi.format(JUSTIFICATION * right_just + PADDING * @settings.padding.right, [*settings.bg_color]) +
-      (@settings.border_settings.right? ? Ansi.format(settings.border_settings.style.right_vert, [*settings.bg_color, *settings.border_settings.color]) : '') +
-      margin(right_margin)
-
+      Ansi.format(JUSTIFICATION * right_just, [*settings.bg_color]) +
+      padding.right +
+      border.right +
+      margin.right
   end
 
   def visible(line)
@@ -252,22 +400,6 @@ class BoxCanvas
       line[left_chop..-right_chop - 1]
     else
       line[-box.width..-1]
-    end
-  end
-
-  def left_margin
-    if settings.margin.auto?
-      (container_width - box.width) / 2 - settings.padding.left - (settings.border_settings.left? ? 1 : 0)
-    else
-      settings.margin.left
-    end
-  end
-
-  def right_margin
-    if settings.margin.auto?
-      (container_width - box.width) / 2 - settings.padding.right - (settings.border_settings.right? ? 1 : 0)
-    else
-      settings.margin.right
     end
   end
 
@@ -286,72 +418,23 @@ class BoxCanvas
     [0, box.width - box.content_width - left_just].max
   end
 
-  def margin(width)
-    Ansi.format(MARGIN * width, [*parent_settings.bg_color])
-  end
-
-  def padding(width)
-    Ansi.format(PADDING * width, [*settings.bg_color])
-  end
-
-  def draw_horiz_border(start_corner, horizontal, end_corner, &block)
-    yield margin(left_margin) +
-    Ansi.format(
-      start_corner +
-        horizontal * (box.width + settings.padding.left + settings.padding.right) +
-        end_corner,
-        [*settings.bg_color, *settings.border_settings.color]
-      ) +
-      margin(right_margin)
-  end
-
-  def draw_empty_margin(&block)
-    yield margin(
-      left_margin +
-      (settings.border_settings.left? ? 1 : 0) +
-      settings.padding.left +
-      box.width +
-      settings.padding.right +
-      (settings.border_settings.right? ? 1 : 0) +
-      right_margin
-    )
-  end
-
   def draw_top(&block)
-    settings.margin.top.times { draw_empty_margin(&block) }
-    if settings.border_settings.top?
-      draw_horiz_border(
-        settings.border_settings.left? ? settings.border_settings.style.top_left : '',
-        settings.border_settings.style.top_horiz,
-        settings.border_settings.right? ? settings.border_settings.style.top_right : '',
-        &block
-      )
+    margin.draw_top(&block)
+    border.draw_top do |line|
+      yield margin.left + line + margin.right
     end
-    settings.padding.top.times do
-      yield margin(left_margin) +
-        (settings.border_settings.left? ? Ansi.format(settings.border_settings.style.left_vert, [*settings.bg_color, *settings.border_settings.color]) : '') +
-        padding(settings.padding.left + box.width + settings.padding.right) +
-        (settings.border_settings.right? ? Ansi.format(settings.border_settings.style.right_vert, [*settings.bg_color, *settings.border_settings.color]) : '') +
-        margin(right_margin)
+    padding.draw_top do |line|
+      yield margin.left + border.left + line + border.right + margin.right
     end
   end
 
   def draw_bottom(&block)
-    settings.padding.bottom.times do
-      yield margin(left_margin) +
-        (settings.border_settings.left? ? Ansi.format(settings.border_settings.style.left_vert, [*settings.bg_color, *settings.border_settings.color]) : '') +
-        padding(settings.padding.left + box.width + settings.padding.right) +
-        (settings.border_settings.right? ? Ansi.format(settings.border_settings.style.right_vert, [*settings.bg_color, *settings.border_settings.color]) : '') +
-        margin(right_margin)
+    padding.draw_bottom do |line|
+      yield margin.left + border.left + line + border.right + margin.right
     end
-    if settings.border_settings.bottom?
-      draw_horiz_border(
-        settings.border_settings.left? ? settings.border_settings.style.bottom_left : '',
-        settings.border_settings.style.bottom_horiz,
-        settings.border_settings.right? ? settings.border_settings.style.bottom_right : '',
-        &block
-      )
+    border.draw_bottom do |line|
+      yield margin.left + line + margin.right
     end
-    settings.margin.bottom.times { draw_empty_margin(&block) }
+    margin.draw_bottom(&block)
   end
 end
