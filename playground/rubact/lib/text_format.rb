@@ -1,4 +1,4 @@
-COLOR_DEBUG = false
+DEBUG_COLOR = ARGV.include?('--debug-color')
 
 module Ansi
   BOLD = 1
@@ -30,14 +30,14 @@ module Ansi
     end
 
     def hidden_width(line)
-      return 0 if COLOR_DEBUG
+      return 0 if DEBUG_COLOR
       width = 0
       line.scan(/\033\[\d+m/).each { |f| width += f.length }
       width
     end
 
     def close_formatting(line)
-      codes = line.scan(COLOR_DEBUG ? /<(\d+)>/ : /\033\[(\d+)m/)
+      codes = line.scan(DEBUG_COLOR ? /<(\d+)>/ : /\033\[(\d+)m/)
       if codes.length > 0 && codes.last[0] != END_FORMATTING.to_s
         "#{line}#{esc_seq(END_FORMATTING)}"
       else
@@ -48,7 +48,7 @@ module Ansi
     private
 
     def esc_seq(code)
-      COLOR_DEBUG ? "<#{code}>" : "\033[#{code}m"
+      DEBUG_COLOR ? "<#{code}>" : "\033[#{code}m"
     end
   end
 end

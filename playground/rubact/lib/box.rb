@@ -1,7 +1,7 @@
 require_relative 'text_format'
 
 
-DEBUG_SPACING = false
+DEBUG_SPACING = ARGV.include?('--debug-spacing')
 
 module TextAlign
   LEFT = 1

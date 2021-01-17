@@ -47,8 +47,6 @@ class Screen
   def finalize
     print Ansi.clear
     print cursor.show
-    # print cursor.move_to(0, 0)
-    # print cursor.clear_screen_down
     STDOUT.flush
   end
 
