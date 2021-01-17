@@ -1,7 +1,7 @@
 require 'highline'
 require 'tty-cursor'
 
-require_relative 'ui/text_format'
+require_relative 'ui/ansi'
 
 class Screen
   DEBUG_SCREEN = ARGV.include?('--initial-screen')

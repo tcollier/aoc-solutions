@@ -1,5 +1,5 @@
 require_relative 'settings'
-require_relative 'text_format'
+require_relative 'ansi'
 
 module UI
   DEBUG_SPACING = ARGV.include?('--debug-spacing')
