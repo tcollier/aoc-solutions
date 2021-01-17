@@ -156,32 +156,31 @@ module UI
 
     def initialize(box, container_width, settings, parent_settings)
       @box = box
-      @container_width = container_width
       @settings = settings.merge(parent_settings)
-      @padding = PaddingCanvas.new(settings.padding, settings.bg_color, box.width)
-      @border = BorderCanvas.new(settings.border_settings, settings.bg_color, @padding.width)
-      @margin = MarginCanvas.new(settings.margin, parent_settings.bg_color, container_width, @border.width)
+      @padding = PaddingCanvas.new(@settings.padding, @settings.bg_color, box.width)
+      @border = BorderCanvas.new(@settings.border_settings, @settings.bg_color, @padding.width)
+      @margin = MarginCanvas.new(@settings.margin, parent_settings.bg_color, container_width, @border.width)
     end
 
     def draw(&block)
-      draw_top(&block)
-      box.content.draw(box.width, settings) do |line|
-        draw_line(line, &block)
-      end
-      draw_bottom(&block)
+      margin.draw_top(&block)
+      border.draw_top { |line| yield margin.left + line + margin.right }
+      padding.draw_top { |line| yield margin.left + border.left + line + border.right + margin.right }
+      box.content.draw(box.width, settings) { |line| draw_content_line(line, &block) }
+      padding.draw_bottom { |line| yield margin.left + border.left + line + border.right + margin.right }
+      border.draw_bottom { |line| yield margin.left + line + margin.right }
+      margin.draw_bottom(&block)
     end
 
     private
 
-    attr_reader :box, :container_width, :settings, :padding, :border, :margin
+    attr_reader :box, :settings, :padding, :border, :margin
 
-    def draw_line(line, &block)
+    def draw_content_line(line, &block)
       yield margin.left +
         border.left +
         padding.left +
-        Ansi.format(JUSTIFICATION * left_just, [*settings.bg_color]) +
-        Ansi.format(visible(line), [*settings.bg_color, *settings.color]) +
-        Ansi.format(JUSTIFICATION * right_just, [*settings.bg_color]) +
+        justify(line) +
         padding.right +
         border.right +
         margin.right
@@ -202,8 +201,8 @@ module UI
       end
     end
 
-    def left_just
-      case settings.align
+    def justify(line)
+      ljust = case settings.align
       when TextAlign::LEFT
         0
       when TextAlign::CENTER
@@ -211,30 +210,10 @@ module UI
       when TextAlign::RIGHT
         [0, box.width - box.content_width].max
       end
-    end
-
-    def right_just
-      [0, box.width - box.content_width - left_just].max
-    end
-
-    def draw_top(&block)
-      margin.draw_top(&block)
-      border.draw_top do |line|
-        yield margin.left + line + margin.right
-      end
-      padding.draw_top do |line|
-        yield margin.left + border.left + line + border.right + margin.right
-      end
-    end
-
-    def draw_bottom(&block)
-      padding.draw_bottom do |line|
-        yield margin.left + border.left + line + border.right + margin.right
-      end
-      border.draw_bottom do |line|
-        yield margin.left + line + margin.right
-      end
-      margin.draw_bottom(&block)
+      rjust = [0, box.width - box.content_width - ljust].max
+      Ansi.format(JUSTIFICATION * ljust, [*settings.bg_color]) +
+        visible(line) +
+        Ansi.format(JUSTIFICATION * rjust, [*settings.bg_color])
     end
   end
 end

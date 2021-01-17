@@ -16,15 +16,16 @@ class Application
     outer_settings = UI::BoxSettings.new(
       color: UI::TextColor::BLUE.bright,
       bg_color: UI::BgColor::YELLOW,
-      text_format: [UI::TextFormat::UNDERLINE],
+      underline: true,
       border_settings: UI::BorderSettings.new(color: UI::TextColor::BLACK),
       padding: UI::BoxPadding.new(top: 1, right: 2, bottom: 1, left: 2),
       margin: UI::BoxMargin.new(top: 1, right: 2, bottom: 1, left: 2)
     )
     inner_settings = UI::BoxSettings.new(
+      width: 50,
       color: UI::TextColor::CYAN.bright,
       bg_color: UI::BgColor::GREEN,
-      text_format: [UI::TextFormat::BOLD],
+      bold: true,
       border_settings: UI::BorderSettings.new(style: UI::BorderStyles::SOFT, color: UI::TextColor::RED.bright),
       align: UI::TextAlign::CENTER,
       padding: UI::BoxPadding.new(top: 1, right: 2, bottom: 1, left: 2),

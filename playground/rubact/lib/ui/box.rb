@@ -13,8 +13,12 @@ module UI
     end
 
     def draw(_, parent_settings=BoxSettings.new, &block)
+      format_settings = [*parent_settings.color, *parent_settings.bg_color]
+      format_settings << TextFormat::BOLD if parent_settings.bold?
+      format_settings << TextFormat::UNDERLINE if parent_settings.underline?
+
       @text.split("\n").each do |line|
-        yield Ansi.format(line, parent_settings.text_format)
+        yield Ansi.format(line, format_settings)
       end
     end
   end

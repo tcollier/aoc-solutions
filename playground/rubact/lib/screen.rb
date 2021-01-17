@@ -4,6 +4,8 @@ require 'tty-cursor'
 require_relative 'ui/text_format'
 
 class Screen
+  DEBUG_SCREEN = ARGV.include?('--initial-screen')
+
   def initialize
     Signal.trap('SIGWINCH', proc { self.refresh_size! })
     @terminal = HighLine.new.terminal
@@ -16,6 +18,7 @@ class Screen
     begin
       while application.running?
         screen.draw(application)
+        break if DEBUG_SCREEN
         sleep(1.0 / refresh_rate_fps)
       end
     ensure

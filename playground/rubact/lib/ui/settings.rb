@@ -68,7 +68,9 @@ module UI
   end
 
 
-  BorderStyle = Struct.new(:top_left, :top_horiz, :top_right, :left_vert, :right_vert, :bottom_left, :bottom_horiz, :bottom_right)
+  BorderStyle = Struct.new(
+    :top_left, :top_horiz, :top_right, :left_vert, :right_vert, :bottom_left, :bottom_horiz, :bottom_right
+  )
 
   module BorderStyles
     BOLD = BorderStyle.new('┏', '━', '┓', '┃', '┃', '┗', '━', '┛')
@@ -122,7 +124,8 @@ module UI
       width: nil,
       color: nil,
       bg_color: nil,
-      text_format: nil,
+      bold: nil,
+      underline: nil,
       border_settings: nil,
       margin: nil,
       padding: nil,
@@ -131,15 +134,20 @@ module UI
       @width = width
       @color = color
       @bg_color = bg_color
-      @text_format = text_format
+      @bold = bold
+      @underline = underline
       @border_settings = border_settings
       @margin = margin
       @padding = padding
       @align = align
     end
 
-    def text_format
-      @text_format || []
+    def bold?
+      @bold || false
+    end
+
+    def underline?
+      @underline || false
     end
 
     def border_settings
@@ -163,12 +171,17 @@ module UI
         width: @width,
         color: @color || parent.color,
         bg_color: @bg_color || parent.bg_color,
-        text_format: @text_format || parent.text_format,
+        bold: @bold.nil? ? parent.bold : @bold,
+        underline: @underline.nil? ? parent.underline : @underline,
         border_settings: @border_settings || parent.border_settings,
         margin: @margin || parent.margin,
         padding: @padding || parent.padding,
         align: @align || parent.align
       )
     end
+
+    protected
+
+    attr_reader :bold, :underline
   end
 end
