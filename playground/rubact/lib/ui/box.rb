@@ -12,9 +12,9 @@ module UI
       end
     end
 
-    def draw(*)
+    def draw(_, parent_settings=BoxSettings.new, &block)
       @text.split("\n").each do |line|
-        yield line
+        yield Ansi.format(line, parent_settings.text_format)
       end
     end
   end

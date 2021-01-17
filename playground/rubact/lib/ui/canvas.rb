@@ -180,7 +180,7 @@ module UI
         border.left +
         padding.left +
         Ansi.format(JUSTIFICATION * left_just, [*settings.bg_color]) +
-        Ansi.format(visible(line), [*settings.bg_color]) +
+        Ansi.format(visible(line), [*settings.bg_color, *settings.color]) +
         Ansi.format(JUSTIFICATION * right_just, [*settings.bg_color]) +
         padding.right +
         border.right +

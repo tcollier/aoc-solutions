@@ -29,6 +29,7 @@ module UI
       @bottom || 0
     end
   end
+  private_constant :BoxSpacing
 
   class BoxPadding < BoxSpacing
   end
@@ -118,15 +119,27 @@ module UI
     attr_reader :width, :color, :bg_color
 
     def initialize(
-      width: nil, color: nil, bg_color: nil, border_settings: nil, margin: nil, padding: nil, align: nil
+      width: nil,
+      color: nil,
+      bg_color: nil,
+      text_format: nil,
+      border_settings: nil,
+      margin: nil,
+      padding: nil,
+      align: nil
     )
       @width = width
       @color = color
       @bg_color = bg_color
+      @text_format = text_format
       @border_settings = border_settings
       @margin = margin
       @padding = padding
       @align = align
+    end
+
+    def text_format
+      @text_format || []
     end
 
     def border_settings
@@ -150,6 +163,7 @@ module UI
         width: @width,
         color: @color || parent.color,
         bg_color: @bg_color || parent.bg_color,
+        text_format: @text_format || parent.text_format,
         border_settings: @border_settings || parent.border_settings,
         margin: @margin || parent.margin,
         padding: @padding || parent.padding,
