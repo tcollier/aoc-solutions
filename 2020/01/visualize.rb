@@ -1,15 +1,39 @@
 require 'whirled_peas'
 
 class TemplateFactory
-  def initialize
-    @numbers = []
+  def build(frame, args)
+    set_state(frame, args)
+
+    WhirledPeas.template do |t|
+      t.add_box do |body, os|
+        os.set_margin(top: 2)
+        os.flow = :t2b
+        os.auto_margin = true
+
+        body.add_box(&method(:title))
+        body.add_grid(&method(:results))
+        body.add_grid(&method(:number_grid))
+      end
+    end
+  end
+
+  private
+
+  def set_state(frame, args)
+    @numbers = args.key?('numbers') ? args['numbers'] : (@numbers || [])
+    @solved = frame == 'success'
+    @sum = args['i'] && (@numbers[args['i']] + @numbers[args['j']] + @numbers[args['k']])
+    @product = args['i'] && (@numbers[args['i']] * @numbers[args['j']] * @numbers[args['k']])
+    @i = args['i']
+    @j = args['j']
+    @k = args['k']
   end
 
   def title(elem, settings)
     settings.auto_margin = true
     settings.underline = true
     settings.bold = true
-    "Advent Of Code: Day 1 Part 2"
+    "Advent Of Code: 2020 Day 1 Part 2"
   end
 
   def results(elem, settings)
@@ -52,26 +76,6 @@ class TemplateFactory
         num.to_s
       end
     end
-end
-
-  def build(name, args)
-    @numbers = args['numbers'] if args.key?('numbers')
-    @solved = name == 'success'
-    @sum = args['i'] && (@numbers[args['i']] + @numbers[args['j']] + @numbers[args['k']])
-    @product = args['i'] && (@numbers[args['i']] * @numbers[args['j']] * @numbers[args['k']])
-    @i = args['i']
-    @j = args['j']
-    @k = args['k']
-    WhirledPeas.template do |t|
-      t.add_box do |body, os|
-        os.set_margin(top: 2)
-        os.display_flow = :block
-        os.auto_margin = true
-        body.add_box(&method(:title))
-        body.add_grid(&method(:results))
-        body.add_grid(&method(:number_grid))
-      end
-    end
   end
 end
 
@@ -79,9 +83,9 @@ class Driver
   TARGET = 2020
   def start(producer)
     numbers = File.readlines(File.join(File.dirname(__FILE__), 'input.txt')).map(&:to_i)
-    producer.send('load', frames: 50, args: { numbers: numbers })
+    producer.send('load', duration: 3, args: { numbers: numbers })
     numbers.sort!
-    producer.send('sort', frames: 50, args: { numbers: numbers })
+    producer.send('sort', duration: 3, args: { numbers: numbers })
     (numbers.length - 2).times do |i|
       j = i + 1
       k = numbers.length - 1
@@ -89,7 +93,7 @@ class Driver
         sum = numbers[i] + numbers[j] + numbers[k]
         producer.send('attempt', args: { i: i, j: j, k: k })
         if sum == 2020
-          producer.send('success', frames: 100, args: { i: i, j: j, k: k })
+          producer.send('success', duration: 5, args: { i: i, j: j, k: k })
           return
         elsif sum > TARGET
           k -= 1
