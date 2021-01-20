@@ -6,16 +6,27 @@ GIT
     aoc_executor (0.1.0)
       json (~> 2.5)
 
+PATH
+  remote: /Users/tomcollier/dev/github.com/tcollier/whirled_peas
+  specs:
+    whirled_peas (0.1.0)
+      highline
+      json
+      tty-cursor
+
 GEM
   remote: https://rubygems.org/
   specs:
+    highline (2.0.3)
     json (2.5.1)
+    tty-cursor (0.7.1)
 
 PLATFORMS
   ruby
 
 DEPENDENCIES
   aoc_executor!
+  whirled_peas!
 
 BUNDLED WITH
    2.1.4
