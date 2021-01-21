@@ -46,14 +46,14 @@ class TemplateFactory
       settings.align = :right
       settings.width = 9
       settings.bg_color = @solved ? :green : :magenta
-      @sum.nil? ? 'N/A' : @sum.to_s
+      @sum.nil? ? 'N/A' : @sum
     end
     elem.add_text { "PRODUCT:" }
     elem.add_text do |_, settings|
       settings.align = :right
       settings.width = 10
       settings.bg_color = @solved ? :green : :magenta
-      @product.nil? ? 'N/A' : @product.to_s
+      @product.nil? ? 'N/A' : @product
     end
   end
 
@@ -73,7 +73,7 @@ class TemplateFactory
         elsif @k == index
           ts.bg_color = :magenta
         end
-        num.to_s
+        num
       end
     end
   end

@@ -20,6 +20,7 @@ class TemplateFactory
 
         body.add_box('Title', &method(:title))
         body.add_box('Content') do |content, settings|
+          settings.auto_margin = false
           settings.flow = :l2r
           content.add_box('DimsList', &method(:dims_list))
           content.add_grid('Results', &method(:results))
@@ -113,7 +114,7 @@ class TemplateFactory
               settings.color = CURRENT_SIDE_COLOR
             end
           end
-          dim[0].to_s
+          dim[0]
         end
         row.add_text { ' x ' }
         row.add_text do |_, settings|
@@ -127,7 +128,7 @@ class TemplateFactory
               settings.color = CURRENT_SIDE_COLOR
             end
           end
-          dim[1].to_s
+          dim[1]
         end
         row.add_text { ' x ' }
         row.add_text do |_, settings|
@@ -141,7 +142,7 @@ class TemplateFactory
               settings.color = CURRENT_SIDE_COLOR
             end
           end
-          dim[2].to_s
+          dim[2]
         end
         row.add_text { (min_scroll...max_scroll).include?(i) ? ' ▐' : '  ' }
       end
