@@ -1,13 +1,24 @@
-                             TWO=2
-                              .to_s(2).
-to_i                           ;TEN=eval(
- '0'.+                       ?b.+'10');NET=
- (TEN^TWO                   )/TEN/TEN/TEN;INF=
-  (TWO^TEN)-    (       TEN^TWO);TWENTY=(+TEN.+(TWO)).times;càll=
-   open('input.txt').map{|cəll|Integer(cəll,TEN)};cãll=->(cäll,cåll){TEN*
-   cäll.map{|cəll|(cəll>>cåll)&NET}.sum>=cäll.count};cáll =->(cåll,cäll){
-  cãll.call(cåll,cäll)?NET<<cäll:INF};câll=->(cåll,cäll){cãll.call(cåll,
- cäll)?INF:   NET      << cäll};puts(TWENTY.map{|cəll|cáll.call(càll,
-cəll         )}             .sum*TWENTY.map{|cəll          |câll.
-                          call(càll                           ,cəll)}
-                        .sum)
+                                                                                             ₿=$<.
+                                                                                           clone||p
+                                                                                           def ₿.+@()
+                                                                                           first;end#do
+                                                                               def ₿.>(ord);(+self).strip.
+                                                                  split(ord).map(&:to_i);end;[?$,?<,??].map(
+                        &                       :ord).tap{$≮=(_1[2]-_1[1]);F=(_1[1]-_1[0])/$≮-$≮};￥=₿>?,;while
+              +₿;       n=            F.times.itself.map{₿>/ +/};(B||=[])<<{w:n+n.transpose,n:n.flatten};end;
+             b=  B       ;l=m=      n=o=p;(F...(￥.length-1)).%(((F>>(1<<1))**F))do|i|;ord=￥.take(i+1);n=[]
+        b        .one?      {|c|;c[:w].any?{(_1-ord).none?}?(!m&&m=(c[:n]-ord).sum*￥[i]     ):n<<c;p};l||
+         b[1]      ||n[0]||l=(b[0][:n]-ord).sum*￥[i];b=n;end;puts([m,l]*"\n");                'MKOE@'.
+  tap      {Q=_1.chars.map{|c|c.ord.to_s(1<<3).to_i.chr}*''};q=Q.gsub(/./                        )do
+_1              .ord.send(:-,1<<F).chr;end;print(q);T=->do
+  867*5309   .times{(_1*_1)**_1};end;E="\033["
+        T.call     ;F.downto(F&01).each{
+    ;          print(E+_1.to_s+?G+(
+     1<<F   ).chr+E+_1   .to_s+?G
+        )||T.   call    };t=T
+                ?T;      print    (
+               E+?F         +E+   ?E)
+             E+?E            +?F+E+
+            E+E+
+           E+  ?F+   E+
+        ?F+      ?E+E 
