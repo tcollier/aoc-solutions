@@ -26,22 +26,6 @@ class Card(object):
         for row in numbers:
             winners.append(set(row))
 
-        # Add diagonals as winners
-        winners.append(set([
-            numbers[0][0],
-            numbers[1][1],
-            numbers[2][2],
-            numbers[3][3],
-            numbers[4][4],
-        ]))
-        winners.append(set([
-            numbers[0][4],
-            numbers[1][3],
-            numbers[2][2],
-            numbers[3][1],
-            numbers[4][0],
-        ]))
-
         # Transpose card to get easy access to the columns
         transposed = [[numbers[j][i] for j in range(len(numbers))] for i in range(len(numbers[0]))]
         for column in transposed:
@@ -53,19 +37,31 @@ class Card(object):
 class Game(object):
     def __init__(self, cards):
         self._cards = cards
-        self.called = []
+        self.winning_called = []
+        self.losing_called = []
 
     def play(self, ordered):
+        winning_card = None
+        losing_card = None
+        cards = self._cards
         for current in ordered:
-            self.last_called = current
-            self.called.append(current)
-            if len(self.called) >= 5:
-                called_set = set(self.called)
-                for card in self._cards:
+            if not winning_card:
+                self.winning_called.append(current)
+            if not losing_card:
+                self.losing_called.append(current)
+            if len(self.losing_called) >= 5:
+                called_set = set(self.losing_called)
+                next_cards = []
+                for card in cards:
                     if card.is_winner(called_set):
-                        return card
-        raise NotImeplemetedError()
-
+                        if not winning_card:
+                            winning_card = card
+                        if len(cards) == 1:
+                            losing_card = cards[0]
+                    else:
+                        next_cards.append(card)
+                cards = next_cards
+        return (winning_card, losing_card)
 
 
 ordered = [n for n in lines[0][0].split(",")]
@@ -75,6 +71,7 @@ for i in range((len(lines) - 1) // 6):
 
 
 game = Game(cards)
-winning_card = game.play(ordered)
-print(winning_card.score(game.called) * int(game.called[-1]))
+winning_card, losing_card = game.play(ordered)
+print(winning_card.score(game.winning_called) * int(game.winning_called[-1]))
+print(losing_card.score(game.losing_called) * int(game.losing_called[-1]))
 
