@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+
+ITERS=1000
+time_impl() {
+	file=$1
+	echo "Timing ${ITERS} iterations of ${file}"
+	for i in $(seq 1 ${ITERS})
+	do
+		ruby $file input.txt | tail -1
+	done | awk '{s+=$0}END{print s/NR}' RS=" "
+}
+
+time_impl stack.rb
+time_impl gsub.rb
