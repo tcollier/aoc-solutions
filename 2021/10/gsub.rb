@@ -19,9 +19,9 @@ $<.map do |line|
   if /\)|}|\]|>/ =~ curr
     p1_score += P1_SCORES[$~[0]]
   else
-    p2_scores << curr.reverse.tr('{(<[', '3142').to_i(5)
+    p2_scores << curr.reverse.tr('{|(<[', Math::PI.round(3).to_s).to_i(5)
   end
 end
 puts p1_score;
-puts p2_scores.sort[p2_scores.length / 2]
+puts p2_scores.sort[p2_scores.length >> 1]
 puts Time.now - started_at
