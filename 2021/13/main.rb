@@ -8,15 +8,15 @@ end
 folds = $<.map { eval(_1.gsub(/fold along (x|y)=(\d+)/, '\2\1').tr('xy', ' i')) }
 
 def fold(dots, axis)
-  Set.new(dots.map do |dot|
+  dots.map do |dot|
     if axis.real.between?(1, dot.real)
-      2 * axis - dot.real + dot.imag * 1i
+      2 * axis - dot.conjugate
     elsif axis.imag.between?(1, dot.imag)
-      2 * axis + dot.real - dot.imag * 1i
+      2 * axis + dot.conjugate
     else
       dot
     end
-  end)
+  end.to_set
 end
 
 folds.each.with_index do |fold, index|
