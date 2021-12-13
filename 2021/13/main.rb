@@ -1,16 +1,11 @@
 require 'set'
 require_relative 'ocr'
 
-dots = Set.new
-while (line = $<.gets.chomp) != ''
-  parts = line.split(',').map(&:to_i)
-  dots.add(parts[0] + parts[1] * 1i)
+while (dots ||= Set.new) && (line = $<.gets.chomp) != ''
+  dots.add(line.split(',').map(&:to_i).zip([1, 1i]).map{ _1 * _2 }.inject(:+))
 end
 
-folds = $<.map do |line|
-  match = line.match(/fold along (x|y)=(\d+)/)
-  match[2].to_i * (match[1] == ?x ? 1 : 1i)
-end
+folds = $<.map { eval(_1.gsub(/fold along (x|y)=(\d+)/, '\2\1').tr('xy', ' i')) }
 
 def fold(dots, axis)
   Set.new(dots.map do |dot|
