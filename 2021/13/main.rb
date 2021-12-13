@@ -14,9 +14,9 @@ end
 
 def fold(dots, axis)
   Set.new(dots.map do |dot|
-    if axis.real > 0 && dot.real > axis.real
+    if axis.real.between?(1, dot.real)
       2 * axis - dot.real + dot.imag * 1i
-    elsif axis.imag > 0 && dot.imag > axis.imag
+    elsif axis.imag.between?(1, dot.imag)
       2 * axis + dot.real - dot.imag * 1i
     else
       dot
