@@ -1,18 +1,6 @@
 require 'whirled_peas/animator/easing'
 
-MAP = $<.map { _1.chomp.chars.map(&:to_i) }
-total = 0
-MAP.length.times do |row|
-  MAP[row].length.times do |col|
-    neighbors = []
-    neighbors << MAP[row - 1][col] if row > 0
-    neighbors << MAP[row + 1][col] if row < MAP.length - 1
-    neighbors << MAP[row][col - 1] if col > 0
-    neighbors << MAP[row][col + 1] if col < MAP[row].length - 1
-    total += (1 + MAP[row][col]) if MAP[row][col] < neighbors.min
-  end
-end
-# puts total
+floor_map = FloorMap.new($<.map { _1.chomp.chars.map(&:to_i) })
 
 BASINS = []
 

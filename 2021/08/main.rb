@@ -1,38 +1,44 @@
 require 'set'
 
-SEGS_TO_DIGIT = {
-  'abcefg' => 0,
-  'cf' => 1,
-  'acdeg' => 2,
-  'acdfg' => 3,
-  'bcdf' => 4,
-  'abdfg' => 5,
-  'abdefg' => 6,
-  'acf' => 7,
-  'abcdefg' => 8,
-  'abcdfg' => 9,
+# Keys are alphabetized list of segments used to make the digit, values
+# are the digit. The keys are formatted with extra characters that are
+# stripped out so that the list of values appears as a grid in code.
+SEGS_TO_DIGIT = {                     # v-- number of segments per digit
+  'a-b-c- -e-f-g'.tr('- ', '') => 0,  # 6
+  ' - -c- - -f- '.tr('- ', '') => 1,  # 2
+  'a- -c-d-e- -g'.tr('- ', '') => 2,  # 5
+  'a- -c-d- -f-g'.tr('- ', '') => 3,  # 5
+  ' -b-c-d- -f- '.tr('- ', '') => 4,  # 4
+  'a-b- -d- -f-g'.tr('- ', '') => 5,  # 5
+  'a-b- -d-e-f-g'.tr('- ', '') => 6,  # 6
+  'a- -c- - -f- '.tr('- ', '') => 7,  # 3
+  'a-b-c-d-e-f-g'.tr('- ', '') => 8,  # 7
+  'a-b-c-d- -f-g'.tr('- ', '') => 9,  # 6
 }
+#  8 6 8 7 4 9 7
+#  ^--- number of digits each segment appears in (i.e. segment  'a' appears
+#       in 8 digits--all but '1' and '4')
 
 def map_segs(inputs)
   seg_map = {}
-  segs_count_map = Hash.new { [] }
+  segments_per_digit = Hash.new { [] }
   occur_count_inv_map = Hash.new { 0 }
   count_map = inputs.each do |input|
     chars = input.chars
-    segs_count_map[input.length] <<= Set.new(chars)
+    segments_per_digit[input.length] <<= Set.new(chars)
     chars.each do |char|
       occur_count_inv_map[char] += 1
     end
   end
-  occur_count_map = occur_count_inv_map.map.with_object(Hash.new { Array.new }) do |(char, cnt), hash|
+  digits_per_segment = occur_count_inv_map.map.with_object(Hash.new { Array.new }) do |(char, cnt), hash|
     hash[cnt] <<= char
   end
-  seg_map[?a] = (segs_count_map[3][0] - segs_count_map[2][0]).first
-  seg_map[?b] = occur_count_map[6][0]
-  seg_map[?c] = (occur_count_map[8] - [seg_map[?a]]).first
-  seg_map[?d] = (occur_count_map[7] & segs_count_map[4][0].to_a).first
-  seg_map[?e] = occur_count_map[4][0]
-  seg_map[?f] = occur_count_map[9][0]
+  seg_map[?a] = (segments_per_digit[3][0] - segments_per_digit[2][0]).first
+  seg_map[?b] = digits_per_segment[6][0]
+  seg_map[?c] = (digits_per_segment[8] - [seg_map[?a]]).first
+  seg_map[?d] = (digits_per_segment[7] & segments_per_digit[4][0].to_a).first
+  seg_map[?e] = digits_per_segment[4][0]
+  seg_map[?f] = digits_per_segment[9][0]
   seg_map[?g] = (%w[a b c d e f g] - seg_map.values).first
   seg_map.invert
 end

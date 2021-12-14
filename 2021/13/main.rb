@@ -25,4 +25,3 @@ folds.each.with_index do |fold, index|
 end
 
 puts Ocr.new(dots).to_s
-
