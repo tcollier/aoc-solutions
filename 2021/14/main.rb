@@ -160,11 +160,8 @@ def score(template, steps)
     counts[CHAR_INDEXES[pair[0]]] -= 1 if i > 0
   end
 
-  # Remove any counts that are zero as that implies the character is not in the final
-  # string and thus should not be counted
-  counts.reject! { _1 == 0 }
-  counts.sort!
-  counts.last - counts.first
+  min, max = counts.minmax
+  max - min
 end
 
 puts score(TEMPLATE, PART_1_STEPS)
