@@ -1,6 +1,4 @@
-require 'stringio'
-
-MESSAGE = StringIO.new($<.gets.chomp.chars.map { "%04d" % _1.to_i(16).to_s(2) }.join)
+require_relative 'io_helpers'
 
 VERSIONS = []
 
@@ -16,14 +14,16 @@ OPS = [
 ]
 
 def parse_value(msg)
-  value = ''
-  value += msg.gets(4) while msg.getc == '1'
-  (value + msg.gets(4)).to_i(2)
+  value = 0
+  while msg.getc == 1
+    value = (value + msg.gets(4)) << 4
+  end
+  value + msg.gets(4)
 end
 
 def eval_sub_msgs_by_bits(bits_to_read, msg)
   values = []
-  sub_msgs = StringIO.new(msg.gets(bits_to_read))
+  sub_msgs = SubstringIO.new(msg, bits_to_read)
   while !sub_msgs.eof?
     values << eval_msg(sub_msgs)
   end
@@ -35,18 +35,18 @@ def eval_sub_msgs_by_count(sub_packets, msg)
 end
 
 def eval_msg(msg)
-  version = msg.gets(3).to_i(2)
+  version = msg.gets(3)
   VERSIONS << version
 
-  type_id = msg.gets(3).to_i(2)
+  type_id = msg.gets(3)
 
   return parse_value(msg) if type_id == 4
-  OPS[type_id][msg.getc == '0' ?
-    eval_sub_msgs_by_bits(msg.gets(15).to_i(2), msg) :
-    eval_sub_msgs_by_count(msg.gets(11).to_i(2), msg)
+  OPS[type_id][msg.getc == 0 ?
+    eval_sub_msgs_by_bits(msg.gets(15), msg) :
+    eval_sub_msgs_by_count(msg.gets(11), msg)
   ]
 end
 
-result = eval_msg(MESSAGE)
+result = eval_msg(HexToBinIO.new($<))
 puts VERSIONS.sum
 puts result
