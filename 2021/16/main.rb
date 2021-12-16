@@ -1,4 +1,6 @@
-MESSAGE = $<.gets.chomp.chars.map { "%04d" % _1.to_i(16).to_s(2) }.join
+require 'stringio'
+
+MESSAGE = StringIO.new($<.gets.chomp.chars.map { "%04d" % _1.to_i(16).to_s(2) }.join)
 
 VERSIONS = []
 
@@ -13,47 +15,38 @@ OPS = [
   -> { _1[0] == _1[1] ? 1 : 0 },
 ]
 
-def parse_value(message)
+def parse_value(msg)
   value = ''
-  index = 0
-  while message[index] == '1'
-    value += message[(index + 1)..(index + 4)]
-    index += 5
-  end
-  value += message[(index + 1)..(index + 4)]
-  [value.to_i(2), message[(index + 5)..-1]]
+  value += msg.gets(4) while msg.getc == '1'
+  (value + msg.gets(4)).to_i(2)
 end
 
-def parse_subpackets_by_bits(bits_to_read, message, type_id)
+def eval_sub_msgs_by_bits(bits_to_read, msg)
   values = []
-  while bits_to_read > 0
-    value, remainder = parse_message(message)
-    values << value
-    bits_to_read -= (message.length - remainder.length)
-    message = remainder
+  sub_msgs = StringIO.new(msg.gets(bits_to_read))
+  while !sub_msgs.eof?
+    values << eval_msg(sub_msgs)
   end
-  [OPS[type_id][values], message]
+  values
 end
 
-def parse_subpackets_by_count(sub_packets, message, type_id)
-  values = sub_packets.times.map do
-    (value, message = parse_message(message)).first
-  end
-  [OPS[type_id][values], message]
+def eval_sub_msgs_by_count(sub_packets, msg)
+  sub_packets.times.map { eval_msg(msg) }
 end
 
-def parse_message(message)
-  version, type_id, message = message[0..2].to_i(2), message[3..5].to_i(2), message[6..-1]
+def eval_msg(msg)
+  version = msg.gets(3).to_i(2)
   VERSIONS << version
 
-  return parse_value(message) if type_id == 4
-  if message[0] == '0'
-    parse_subpackets_by_bits(message[1..15].to_i(2), message[16..-1], type_id)
-  else
-    parse_subpackets_by_count(message[1..11].to_i(2), message[12..-1], type_id)
-  end
+  type_id = msg.gets(3).to_i(2)
+
+  return parse_value(msg) if type_id == 4
+  OPS[type_id][msg.getc == '0' ?
+    eval_sub_msgs_by_bits(msg.gets(15).to_i(2), msg) :
+    eval_sub_msgs_by_count(msg.gets(11).to_i(2), msg)
+  ]
 end
 
-result, _ = parse_message(MESSAGE)
+result = eval_msg(MESSAGE)
 puts VERSIONS.sum
 puts result
