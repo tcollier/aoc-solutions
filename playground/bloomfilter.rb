@@ -65,7 +65,7 @@ end
 def build_word_store(file, word_length, bloomfilter)
   word_store = WordStore.new(bloomfilter)
   for line in open(file, "r").readlines()
-    word = line.rstrip()
+    word = line.rstrip
     word_store.add(word) if word.length == word_length
   end
   return word_store
