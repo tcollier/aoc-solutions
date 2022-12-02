@@ -2,30 +2,20 @@
 
 SCORES = {
   'X' => {
-    'A' => [4, 3],
-    'B' => [1],
-    'C' => [7, 2],
+    'A' => 4 + 3i,
+    'B' => 1 + 1i,
+    'C' => 7 + 2i,
   },
   'Y' => {
-    'A' => [8, 4],
-    'B' => [5],
-    'C' => [2, 6],
+    'A' => 8 + 4i,
+    'B' => 5 + 5i,
+    'C' => 2 + 6i,
   },
   'Z' => {
-    'A' => [3, 8],
-    'B' => [9],
-    'C' => [6, 7],
+    'A' => 3 + 8i,
+    'B' => 9 + 9i,
+    'C' => 6 + 7i,
   },
 }
-{
-  'X' => 1, 'Y' => 5, 'Z' => 9,
 
-}
-
-scores = [0, 0]
-$<.each do |line|
-  match = line.chomp.match(/(A|B|C) (X|Y|Z)/)
-  scores[0] += SCORES[match[2]][match[1]].first
-  scores[1] += SCORES[match[2]][match[1]].last
-end
-puts scores.join("\n")
+puts $<.map { SCORES[_1[-2]][_1[0]] }.reduce(:+)
