@@ -48,4 +48,3 @@ end
 
 puts root.all_sizes.select { _1 <= 100000 }.sum
 puts root.all_sizes.select { _1 >= 30000000 - (70000000 - root.size) }.sort.first
-
