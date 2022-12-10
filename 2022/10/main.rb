@@ -1,18 +1,36 @@
 #!/usr/bin/env ruby
+require 'set'
 
 CHARS = {
   6922137 => 'A',
+  15329694 => 'B',
   3215766 => 'J',
   10144425 => 'K',
   15310505 => 'R',
   15803535 => 'Z',
 }
 
+MISSING_CODES = Set.new
+def missing_char(code, pixels)
+  if !MISSING_CODES.include?(code)
+    MISSING_CODES << code
+    puts "Add #{code} to CHARS map"
+    pixels.each { puts _1.map { |c| c == 1 ? ?█ : ' ' }.join }
+    puts
+  end
+  ?_
+end
+
+def read_char(pixels)
+  code = Integer(pixels.flatten.join, 2)
+  CHARS[code] || missing_char(code, pixels)
+end
+
 def read_word(pixels)
   (pixels.first.length / 5).times.map do |index|
     start = index * 5
-    CHARS[Integer(pixels.map { _1[start..(start + 3)]}.flatten.join, 2)]
-  end
+    read_char(pixels.map { _1[start..(start + 3)]})
+  end.join
 end
 
 cmds = $<.map do |line|
@@ -33,4 +51,4 @@ pixels = cmds.map.with_index do |val, pixel|
   char
 end
 puts strengths
-puts read_word(pixels.each_slice(40)).join
+puts read_word(pixels.each_slice(40))
